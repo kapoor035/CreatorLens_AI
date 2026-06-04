@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #09090b; /* True true dark zinc-950 */
+  --foreground: #f4f4f5; /* Off-white zinc-100 */
+  
+  --border: rgba(255, 255, 255, 0.05);
+  --border-hover: rgba(255, 255, 255, 0.1);
+  --card-surface: #121214; /* Deep premium charcoal zinc-900/zinc-950 mix */
+  --input-surface: #0a0a0b; /* Obsidian black */
+  
+  --brand-indigo: #4f46e5;
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
+  font-family: var(--font-jakarta), sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+
+/* Linear/Vercel SaaS Card Container */
+.premium-container-card {
+  background-color: var(--card-surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.premium-container-card:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Sleek Inner Scraper Column Cards */
+.premium-inner-card {
+  background-color: rgba(9, 9, 11, 0.4);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-inner-card:hover {
+  border-color: rgba(255, 255, 255, 0.09);
+  background-color: rgba(9, 9, 11, 0.6);
+}
+
+/* Sleek Feature Showcase Cards */
+.premium-feature-card {
+  background-color: var(--card-surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-feature-card:hover {
+  border-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Premium Inputs */
+.premium-input {
+  background-color: var(--input-surface);
+  border: 1px solid var(--border);
+  color: #ffffff;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.premium-input:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.premium-input:focus {
+  border-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(10, 10, 11, 0.95);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* CTA Stripe Gradient Button */
+.premium-cta-button {
+  background: #ffffff;
+  color: #09090b;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-cta-button:hover {
+  background: #f4f4f5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.08);
+}
+
+.premium-cta-button:active {
+  transform: translateY(0);
+}
+
+/* Backward compatibility fallbacks */
+.glass-panel {
+  background-color: var(--card-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.glass-input {
+  background-color: var(--input-surface);
+  border: 1px solid var(--border);
+  color: white;
+  border-radius: 8px;
+  outline: none;
+}
+
+.glass-input:focus {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Simple Fade animation */
+@keyframes premiumFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: premiumFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Simple Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
