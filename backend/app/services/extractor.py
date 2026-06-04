@@ -3,13 +3,27 @@ import logging
 import requests
 import datetime
 import os
+import inspect
 from typing import Dict, Any, List, Optional
 from youtube_transcript_api import YouTubeTranscriptApi
 import yt_dlp
 from app.core.config import settings
+import apify_client
 from apify_client import ApifyClient
 
 logger = logging.getLogger(__name__)
+
+logger.info(f"Loaded Apify Client version: {getattr(apify_client, '__version__', 'unknown')}")
+
+def get_run_field(run: Any, field_name: str) -> Any:
+    """Retrieve field from run response supporting both dict (v1 SDK) and Pydantic object (v3 SDK) types."""
+    if run is None:
+        return None
+    if isinstance(run, dict):
+        return run.get(field_name)
+    # Convert camelCase to snake_case for object attribute access
+    snake_name = re.sub(r'(?<!^)(?=[A-Z])', '_', field_name).lower()
+    return getattr(run, snake_name, getattr(run, field_name, None))
 
 class VideoExtractor:
     
@@ -175,8 +189,22 @@ class VideoExtractor:
 
         logger.info(f"Triggering Apify Instagram Scraper for Reel URL: {url}")
         try:
-            # We run the actor and wait for it to complete (resolves specific Reel URLs instantly)
-            run = client.actor("apify/instagram-scraper").call(run_input=run_input, wait_secs=120)
+            actor_client = client.actor("apify/instagram-scraper")
+            call_sig = inspect.signature(actor_client.call)
+            
+            call_kwargs = {"run_input": run_input}
+            if "wait_duration" in call_sig.parameters:
+                # apify-client >= 3.0.0 (uses timedelta)
+                call_kwargs["wait_duration"] = datetime.timedelta(seconds=120)
+            elif "wait_secs" in call_sig.parameters:
+                # apify-client < 3.0.0 (uses int)
+                call_kwargs["wait_secs"] = 120
+                
+            # Log calling parameters for robustness
+            logger.info(f"Invoking ActorClient.call() with signature parameters: {list(call_sig.parameters.keys())} and arguments: {call_kwargs}")
+            
+            run = actor_client.call(**call_kwargs)
+            logger.info(f"Apify Actor run response: {run}")
         except Exception as e:
             logger.exception(f"Apify Actor execution failed or timed out for Reel URL: {url}")
             raise ValueError(f"Apify Actor execution failed or timed out: {str(e)}")
@@ -187,9 +215,11 @@ class VideoExtractor:
 
         # 2. Retrieve Actor Results Dataset
         try:
-            dataset_items = client.dataset(run["defaultDatasetId"]).list_items().items
+            dataset_id = get_run_field(run, "defaultDatasetId")
+            logger.info(f"Apify default dataset ID: {dataset_id}")
+            dataset_items = client.dataset(dataset_id).list_items().items
         except Exception as e:
-            logger.exception(f"Failed to retrieve Apify dataset items for run: {run.get('id')}")
+            logger.exception(f"Failed to retrieve Apify dataset items for run: {get_run_field(run, 'id')}")
             raise ValueError(f"Failed to retrieve Apify dataset items: {str(e)}")
 
         if not dataset_items:
