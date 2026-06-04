@@ -136,6 +136,13 @@ def analyze_videos(payload: AnalysisRequest, db: Session = Depends(get_db)):
             videos=response_videos
         )
         
+    except ValueError as e:
+        db.rollback()
+        logger.error(f"Validation or scraper error during video analytical comparison: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
     except Exception as e:
         db.rollback()
         logger.error(f"Error during video analytical comparison: {e}")

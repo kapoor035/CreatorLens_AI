@@ -164,6 +164,7 @@ class VideoExtractor:
         try:
             client = ApifyClient(token=apify_token)
         except Exception as e:
+            logger.exception("Apify client initialization failed")
             raise ValueError(f"Apify client initialization failed: {str(e)}")
 
         # 1. Prepare Actor Input to query the single Reel directly
@@ -175,17 +176,20 @@ class VideoExtractor:
         logger.info(f"Triggering Apify Instagram Scraper for Reel URL: {url}")
         try:
             # We run the actor and wait for it to complete (resolves specific Reel URLs instantly)
-            run = client.actor("apify/instagram-scraper").call(run_input=run_input, timeout_secs=120)
+            run = client.actor("apify/instagram-scraper").call(run_input=run_input, wait_secs=120)
         except Exception as e:
+            logger.exception(f"Apify Actor execution failed or timed out for Reel URL: {url}")
             raise ValueError(f"Apify Actor execution failed or timed out: {str(e)}")
 
         if not run:
+            logger.error("Apify Actor run returned empty/None run object.")
             raise ValueError("Apify Actor failed to return a valid run object.")
 
         # 2. Retrieve Actor Results Dataset
         try:
             dataset_items = client.dataset(run["defaultDatasetId"]).list_items().items
         except Exception as e:
+            logger.exception(f"Failed to retrieve Apify dataset items for run: {run.get('id')}")
             raise ValueError(f"Failed to retrieve Apify dataset items: {str(e)}")
 
         if not dataset_items:
