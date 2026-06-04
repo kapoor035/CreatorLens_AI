@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { API_BASE_URL } from "../config";
 
 export interface Message {
   role: "user" | "assistant";
@@ -11,7 +12,7 @@ export interface Citation {
   text: string;
 }
 
-export function useChatStream(backendUrl: string) {
+export function useChatStream(backendUrl: string = API_BASE_URL) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [citations, setCitations] = useState<Citation[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);

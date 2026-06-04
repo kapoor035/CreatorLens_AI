@@ -30,7 +30,7 @@ app = FastAPI(
 # 4. Set CORS Middleware rules
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -43,13 +43,18 @@ api_router.include_router(chat.router, prefix="/chat", tags=["chatbot"])
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
-# 6. Basic Health Check Endpoint
+# 6. Root Health Endpoint
+@app.get("/")
+def root_check():
+    return {
+        "status": "ok"
+    }
+
+# 7. Basic Health Check Endpoint
 @app.get("/health")
 def health_check():
     return {
-        "status": "healthy",
-        "project": settings.PROJECT_NAME,
-        "environment": settings.ENVIRONMENT
+        "status": "healthy"
     }
 
 if __name__ == "__main__":

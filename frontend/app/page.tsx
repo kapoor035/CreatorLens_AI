@@ -6,8 +6,7 @@ import { URLForm } from "../components/common/URLForm";
 import { SideBySideCard, VideoData } from "../components/analytics/SideBySideCard";
 import { ChatPanel } from "../components/chat/ChatPanel";
 import { useChatStream } from "../hooks/useChatStream";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+import { API_BASE_URL } from "../config";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +26,7 @@ export default function Home() {
     error: chatError,
     sendMessage,
     resetChat,
-  } = useChatStream(BACKEND_URL);
+  } = useChatStream(API_BASE_URL);
 
   const handleURLSubmit = async (youtubeUrl: string, instagramUrl: string) => {
     setIsLoading(true);
@@ -42,7 +41,7 @@ export default function Home() {
     const timer3 = setTimeout(() => setLoadingStep(3), 25000); // "Finishing analysis..." after 25s
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/v1/analyze`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/analyze`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
